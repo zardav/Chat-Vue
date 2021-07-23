@@ -40,5 +40,6 @@ export default {
     height: 80vh;
     margin: 2px;
     padding: 10px;
+    overflow-y: auto;
   }
 </style>
