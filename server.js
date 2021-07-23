@@ -32,7 +32,6 @@ function newSocket(socket) {
     };
     users[socket.id] = users_by_uid[user.user_id] = user;
     socket.once("login", nick => {
-        console.log(nick);
         user.nick = nick;
         socket.on("public message", message => public_message(socket, message));
         socket.on("private message", ({message, user_id}) => private_message(socket, user_id, message));
@@ -42,7 +41,7 @@ function newSocket(socket) {
         emit_logon("user connected", {user_id: user.user_id, nick});
         user.logon = true;
         socket.emit("logon", user.user_id);
-        console.log(`user connected: {user_id: ${user.user_id}, nick: ${users[socket.id].nick}}`);
+        console.log(`User connected: {user_id: ${user.user_id}, nick: ${users[socket.id].nick}}`);
     });
 
     socket.on("disconnect", () => {
@@ -50,6 +49,7 @@ function newSocket(socket) {
         delete users_by_uid[user_id];
         delete users[socket.id];
         emit_logon("user disconnected", user_id);
+        console.log("Disconnected: " + uuser_id);
     });
 }
 
@@ -76,7 +76,9 @@ function private_message(origin_socket, target_id, message) {
     const {user_id, nick} = users[origin_socket.id];
     const target_user = users_by_uid[target_id];
     if (target_user !== undefined) {
-        target_user.socket.emit("private message", {user_id, nick, message, time: new Date().getTime()});
+        const data = {user_id, nick, message, time: new Date().getTime()};
+        target_user.socket.emit("private message", data);
+        console.log("private message: " + JSON.stringify(data));
     }
 }
 
